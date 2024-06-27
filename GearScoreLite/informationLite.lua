@@ -40,6 +40,7 @@ GS_DefaultSettings = {
 	["Compare"] = -1,
 	["Level"] = -1,
 	["Average"] = -1,
+	["IncludeEnchants"] = false,
 }
 
 

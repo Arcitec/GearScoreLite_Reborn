@@ -81,14 +81,15 @@ function GearScore_GetEnchantInfo(ItemLink, ItemEquipLoc)
 	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3], ItemSubStringTable[2]
 	local StringStart, StringEnd = string.find(ItemSubString, ":") 
 	ItemSubString = string.sub(ItemSubString, StringStart + 1)
-	if ( ItemSubString == "0" ) and ( GS_ItemTypes[ItemEquipLoc]["Enchantable"] )then
-		 --table.insert(MissingEnchantTable, ItemEquipLoc)
-		 local percent = ( floor((-2 * ( GS_ItemTypes[ItemEquipLoc]["SlotMOD"] )) * 100) / 100 );
-		 return(1 + (percent/100));
+	if ( ItemSubString == "0" ) and ( GS_ItemTypes[ItemEquipLoc]["Enchantable"] ) then
+		-- NOTE: The algorithm below is batshit insane and totally broken. It
+		-- should be completely rewritten if anyone ever wants to enable it again.
+		--table.insert(MissingEnchantTable, ItemEquipLoc)
+		local percent = ( floor((-2 * ( GS_ItemTypes[ItemEquipLoc]["SlotMOD"] )) * 100) / 100 );
+		return ( 1 + (percent / 100) );
 	else
-	return 1;
+		return 1;
 	end
-	
 end						
 
 
@@ -110,10 +111,14 @@ function GearScore_GetItemScore(ItemLink)
 			if ( GearScore < 0 ) then GearScore = 0;   Red, Green, Blue = GearScore_GetQuality(1); end
 			if ( PVPScale == 0.75 ) then PVPScore = 1; GearScore = GearScore * 1; 
 			else PVPScore = GearScore * 0; end
-			local percent = (GearScore_GetEnchantInfo(ItemLink, ItemEquipLoc) or 1)
-			GearScore = floor(GearScore * percent )
+			local percent = 1
+			if ( GS_Settings["IncludeEnchants"] ) then
+				-- Reduce GearScore value if enchantable items are missing enchants.
+				percent = (GearScore_GetEnchantInfo(ItemLink, ItemEquipLoc) or 1)
+				GearScore = floor(GearScore * percent)
+			end
 			PVPScore = floor(PVPScore)
-			return GearScore, ItemLevel, GS_ItemTypes[ItemEquipLoc].ItemSlot, Red, Green, Blue, PVPScore, ItemEquipLoc, percent ;
+			return GearScore, ItemLevel, GS_ItemTypes[ItemEquipLoc].ItemSlot, Red, Green, Blue, PVPScore, ItemEquipLoc, percent
 		end
   	end
   	return -1, ItemLevel, 50, 1, 1, 1, PVPScore, ItemEquipLoc, 1
