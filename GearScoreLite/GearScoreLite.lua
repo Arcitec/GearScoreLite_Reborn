@@ -1,9 +1,21 @@
 
 -------------------------------------------------------------------------------
---                            GearScoreLite                                  --
---                             Version 3x04                                   --
---								Mirrikat45                                   --
+--                        GearScoreLite: Reborn                              --
+--                             Version 3x05                                  --
+--               Mirrikat45 & Gnomezilla [Warmane-Icecrown(A)]               --
+--              https://github.com/Arcitec/GearScoreLite_Reborn              --
 -------------------------------------------------------------------------------
+
+--Change Log 3x05
+--See git commit history for full details.
+--fix: larger GS font size for personal character's window
+--feat: add support for "must target" mode
+--fix: remove nonsensical check for combat state
+--fix: initialize combat tracker state on startup
+--fix: remove braindead enchant score algorithm
+--feat: add support for ElvUI, Shadowed and VuhDo unit frames
+--fix: don't calculate GearScore while inspect window open
+--fix: properly apply default settings for "false" values
 
 --Change Log 3x04
 --Fixed an error with GS less over 6000.
