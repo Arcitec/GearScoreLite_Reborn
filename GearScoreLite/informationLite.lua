@@ -41,6 +41,7 @@ GS_DefaultSettings = {
 	["Level"] = -1,
 	["Average"] = -1,
 	["IncludeEnchants"] = false,
+	["MustTarget"] = false,
 }
 
 
