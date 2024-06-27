@@ -180,7 +180,7 @@ function GearScore_HookSetUnit(arg1, arg2)
 	end
 
 	-- Perform the inspection and GearScore calculation.
-	if ( CanInspect(UnitToInspect) ) and ( UnitName(UnitToInspect) == Name ) and not ( GS_PlayerIsInCombat ) then
+	if ( CanInspect(UnitToInspect) ) and ( UnitName(UnitToInspect) == Name ) then
 		-- NOTE: The total lack of delay between "send inspect request" and
 		-- "check unit's gear" is the reason why GearScoreLite sometimes has
 		-- totally incorrect, partial scores, because it's basically inspecting
