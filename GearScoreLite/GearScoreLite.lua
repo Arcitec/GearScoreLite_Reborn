@@ -12,6 +12,10 @@
 
 ------------------------------------------------------------------------------
 
+local GS_PlayerIsInCombat = false
+
+------------------------------------------------------------------------------
+
 function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_Whisper, GS_Sender)
 	if ( GS_EventName == "PLAYER_REGEN_ENABLED" ) then GS_PlayerIsInCombat = false; return; end
 	if ( GS_EventName == "PLAYER_REGEN_DISABLED" ) then GS_PlayerIsInCombat = true; return; end
