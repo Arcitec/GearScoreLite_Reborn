@@ -24,7 +24,7 @@ function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_
 		if ( GS_Prefix == "GearScoreLite" ) then
       		if not ( GS_Settings ) then	GS_Settings = GS_DefaultSettings end
 			if not ( GS_Data ) then GS_Data = {}; end; if not ( GS_Data[GetRealmName()] ) then GS_Data[GetRealmName()] = { ["Players"] = {} }; end
-  			for i, v in pairs(GS_DefaultSettings) do if not ( GS_Settings[i] ) then GS_Settings[i] = GS_DefaultSettings[i]; end; end
+  			for i, v in pairs(GS_DefaultSettings) do if ( GS_Settings[i] == nil ) then GS_Settings[i] = GS_DefaultSettings[i]; end; end
         end
 	end
 end
