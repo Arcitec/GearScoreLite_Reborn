@@ -150,25 +150,57 @@ function GearScore_HookSetUnit(arg1, arg2)
 		return
 	end
 
-	local Name = GameTooltip:GetUnit();local MouseOverGearScore, MouseOverAverage = 0,0
-	if ( CanInspect("mouseover") ) and ( UnitName("mouseover") == Name ) and not ( GS_PlayerIsInCombat ) then 
-		NotifyInspect("mouseover"); MouseOverGearScore, MouseOverAverage = GearScore_GetScore(Name, "mouseover"); 
+	-- Fetch the current tooltip's unit name.
+	local Name = GameTooltip:GetUnit()
+	local MouseOverGearScore, MouseOverAverage = 0, 0
+
+	-- Attempt to inspect via Blizzard's unitframes.
+	-- NOTE: This won't work for third party unitframe addons, since Blizzard's
+	-- official "mouseover" API doesn't know what those other addon frames are.
+	local UnitToInspect = "mouseover"
+
+	-- Detect unit if player uses an alternative unitframe addon instead.
+	-- NOTE: To detect other addons, we check for their main global variable,
+	-- but we must also look for their correct `mf.` property below!
+	if ( not CanInspect(UnitToInspect) ) and ( ElvUI or ShadowUF or VuhDo ) then
+		-- Attempt to fetch custom unitframe, and its internal unit property.
+		local mf = GetMouseFocus()
+		if ( mf ) then
+			UnitToInspect = mf.unit or mf.raidid or "mouseover"
+		end
 	end
- 	if ( MouseOverGearScore ) and ( MouseOverGearScore > 0 ) and ( GS_Settings["Player"] == 1 ) then 
+
+	-- Perform the inspection and GearScore calculation.
+	if ( CanInspect(UnitToInspect) ) and ( UnitName(UnitToInspect) == Name ) and not ( GS_PlayerIsInCombat ) then
+		-- NOTE: The total lack of delay between "send inspect request" and
+		-- "check unit's gear" is the reason why GearScoreLite sometimes has
+		-- totally incorrect, partial scores, because it's basically inspecting
+		-- while the gear hasn't been fully received yet. It's very tedious to
+		-- fix that though. We'd have to rewrite the entire addon to use events
+		-- and caching and some kind of dynamic, delayed tooltip updates, meh:
+		-- https://wowwiki-archive.fandom.com/wiki/API_NotifyInspect
+		NotifyInspect(UnitToInspect)
+		MouseOverGearScore, MouseOverAverage = GearScore_GetScore(Name, UnitToInspect)
+	end
+
+	-- If we've fetched a score, add it to the tooltip.
+ 	if ( MouseOverGearScore ) and ( MouseOverGearScore > 0 ) and ( GS_Settings["Player"] == 1 ) then
 		local Red, Blue, Green = GearScore_GetQuality(MouseOverGearScore)
-		if ( GS_Settings["Level"] == 1 ) then 
+		if ( GS_Settings["Level"] == 1 ) then
 			GameTooltip:AddDoubleLine("GearScore: "..MouseOverGearScore, "(iLevel: "..MouseOverAverage..")", Red, Green, Blue, Red, Green, Blue)
 		else
 			GameTooltip:AddLine("GearScore: "..MouseOverGearScore, Red, Green, Blue)
 		end
 		if ( GS_Settings["Compare"] == 1 ) then
-			local MyGearScore = GearScore_GetScore(UnitName("player"), "player");
+			local MyGearScore = GearScore_GetScore(UnitName("player"), "player")
 			local TheirGearScore = MouseOverGearScore
-			if ( MyGearScore  > TheirGearScore  ) then GameTooltip:AddDoubleLine("YourScore: "..MyGearScore  , "(+"..(MyGearScore - TheirGearScore  )..")", 0,1,0, 0,1,0); end
-			if ( MyGearScore   < TheirGearScore   ) then GameTooltip:AddDoubleLine("YourScore: "..MyGearScore, "(-"..(TheirGearScore - MyGearScore  )..")", 1,0,0, 1,0,0); end	
-			if ( MyGearScore   == TheirGearScore   ) then GameTooltip:AddDoubleLine("YourScore: "..MyGearScore  , "(+0)", 0,1,1,0,1,1); end	
+			if ( MyGearScore  > TheirGearScore ) then GameTooltip:AddDoubleLine("YourScore: "..MyGearScore  , "(+"..(MyGearScore - TheirGearScore  )..")", 0,1,0, 0,1,0); end
+			if ( MyGearScore  < TheirGearScore ) then GameTooltip:AddDoubleLine("YourScore: "..MyGearScore, "(-"..(TheirGearScore - MyGearScore  )..")", 1,0,0, 1,0,0); end
+			if ( MyGearScore == TheirGearScore ) then GameTooltip:AddDoubleLine("YourScore: "..MyGearScore  , "(+0)", 0,1,1,0,1,1); end
 		end
-		if ( GS_Settings["Special"] == 1 ) and ( GS_Special[Name] ) then GameTooltip:AddLine(GS_Special[GS_Special[Name].Type], 1, 0, 0 ); end
+		if ( GS_Settings["Special"] == 1 ) and ( GS_Special[Name] ) then
+			GameTooltip:AddLine(GS_Special[GS_Special[Name].Type], 1, 0, 0 )
+		end
 	end
 end
 
