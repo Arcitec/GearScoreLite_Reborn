@@ -142,6 +142,14 @@ end
 ----------------------------- Hook Set Unit -----------------------------------
 function GearScore_HookSetUnit(arg1, arg2)
 	if ( GS_PlayerIsInCombat ) then return; end
+
+	-- We will refuse to trigger the unit inspect code while an inspection frame
+	-- is open. Otherwise it would switch the current inspect window's talents.
+	-- NOTE: `NotifyInspect()` is responsible for messing up the inspect frame.
+	if ( InspectFrame and InspectFrame:IsShown() ) or ( Examiner and Examiner:IsShown() ) then
+		return
+	end
+
 	local Name = GameTooltip:GetUnit();local MouseOverGearScore, MouseOverAverage = 0,0
 	if ( CanInspect("mouseover") ) and ( UnitName("mouseover") == Name ) and not ( GS_PlayerIsInCombat ) then 
 		NotifyInspect("mouseover"); MouseOverGearScore, MouseOverAverage = GearScore_GetScore(Name, "mouseover"); 
